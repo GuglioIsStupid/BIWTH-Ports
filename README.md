@@ -1,2 +1,2 @@
-# Funkin3D
-3DS "Demake" of the game "Friday Night Funkin'"
+# BIWTH:TG Ports
+Port of Blending In With The Homies: THE GAME to multiple platforms in the same codebase
