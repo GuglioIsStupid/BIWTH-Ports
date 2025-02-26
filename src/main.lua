@@ -281,7 +281,7 @@ function love.keypressed(key)
     if key == "space" then
         -- only for testing
         love.mousepressed(simulatedMouse.x, simulatedMouse.y, 1, false, 1)
-    endds
+    end
 end
 
 -- gamepad controls
