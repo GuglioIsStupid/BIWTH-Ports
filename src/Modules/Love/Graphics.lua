@@ -14,6 +14,19 @@ function love.graphics.draw(image, x, y, screen, r, sx, sy, ox, oy, kx, ky)
     end
     local os = love.system.getOS()
     if os ~= "3DS" then
+        -- the psp uses vita textures so we must scale them down
+        if os == "PSP" then
+            local ratio = {x = 480 / 960, y = 272 / 544}
+            sx = (sx or 1) * ratio.x
+            sy = (sy or 1) * ratio.y
+            return _draw(image, pos.x, pos.y, r, sx, sy, ox, oy, kx, ky)
+            -- the ps3 also uses the vita assets so...
+        elseif os == "PS3" then
+            local ratio = {x = 1280 / 960, y = 720 / 544}
+            sx = (sx or 1) * ratio.x
+            sy = (sy or 1) * ratio.y
+            return _draw(image, pos.x, pos.y, r, sx, sy, ox, oy, kx, ky)
+        end
         return _draw(image, pos.x, pos.y, r, sx, sy, ox, oy, kx, ky)
     else
         if screen == "bottom" then

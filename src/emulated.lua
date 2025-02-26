@@ -4,7 +4,7 @@ NX, Switch
 3DS, Wii U
 PSP, PS3, Vita
 ]]
-_emulatedSystem = ""--[[ "3DS" ]]
+_emulatedSystem = "PSP"--[[ "3DS" ]]
 
 BASE_RES = {1280, 720}
 res = BASE_RES
@@ -64,7 +64,7 @@ if _emulatedSystem then
             vsync = true
         })
         res = {960, 544}
-    elseif _emulatedSystem == "Switch" then
+    elseif _emulatedSystem == "Switch" or _emulatedSystem == "NX" then
         love.window.setMode(1280, 720, {
             fullscreen = false,
             resizable = false,

@@ -16,6 +16,11 @@ elseif system == "Console" then
     end
 end
 
+local simulatedMouse = {
+    x = 0,
+    y = 0
+}
+
 local function initGame()
     peterBonusPos = {-1000,1} --x pos, opacity
     timeRemaining = 5000
@@ -225,16 +230,85 @@ function love.update(dt)
         previousFrameTime = love.timer.getTime() * 1000
         comboDisplayValues[3],comboDisplayValues[4] = love.math.random((comboDisplayValues[3]-shakeIntensity),(comboDisplayValues[3]+shakeIntensity)),love.math.random((comboDisplayValues[4]-shakeIntensity),(comboDisplayValues[4]+shakeIntensity))
     end
+
+    -- simulated mouse on psp, vita, and ps3
+    local os = love.system.getOS()
+
+    if os == "PSP" or os == "Vita" or os == "PS3" then
+        local joystick = love.joystick.getJoysticks()[1]
+        if joystick then
+            if joystick:getAxis(0, 3) > 0.5 then
+                simulatedMouse.x = simulatedMouse.x + 2 * dt
+            elseif joystick:getAxis(0, 3) < -0.5 then
+                simulatedMouse.x = simulatedMouse.x - 2 * dt
+            end
+
+            if joystick:getAxis(0, 4) > 0.5 then
+                simulatedMouse.y = simulatedMouse.y + 2 * dt
+            elseif joystick:getAxis(0, 4) < -0.5 then
+                simulatedMouse.y = simulatedMouse.y - 2 * dt
+            end
+
+            if joystick:isDown(0, "dpup") then
+                simulatedMouse.y = simulatedMouse.y - 2 * dt
+            elseif joystick:isDown(0, "dpdown") then
+                simulatedMouse.y = simulatedMouse.y + 2 * dt
+            end
+
+            if joystick:isDown(0, "dpleft") then
+                simulatedMouse.x = simulatedMouse.x - 2 * dt
+            elseif joystick:isDown(0, "dpright") then
+                simulatedMouse.x = simulatedMouse.x + 2 * dt
+            end
+        end
+
+        print(simulatedMouse.x, simulatedMouse.y)
+        if love.keyboard.isDown("w") then
+            simulatedMouse.y = simulatedMouse.y - 200 * dt
+        elseif love.keyboard.isDown("s") then
+            simulatedMouse.y = simulatedMouse.y + 200 * dt
+        end
+
+        if love.keyboard.isDown("a") then
+            simulatedMouse.x = simulatedMouse.x - 200 * dt
+        elseif love.keyboard.isDown("d") then
+            simulatedMouse.x = simulatedMouse.x + 200 * dt
+        end
+    end
+end
+
+function love.keypressed(key)
+    if key == "space" then
+        -- only for testing
+        love.mousepressed(simulatedMouse.x, simulatedMouse.y, 1, false, 1)
+    endds
+end
+
+-- gamepad controls
+function love.gamepadpressed(joystick, button)
+    if button == "a" then
+    end
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
-    local pos --[[ = convertResolution(x, y) ]]
-    if love.system.getOS() == "3DS" then
-        pos = convertResolution(x, y)
-    else
-        pos = convertResolution2(x, y)
+    
+    -- convert x and y to the correct resolution
+    local os = love.system.getOS()
+    if os == "Switch" or os == "NX" then
+        -- do nothing
+    elseif os == "PSP" then
+        -- convert the psp resolution to the 1280x720 res
+        x = x * (1280 / 960) * 2
+        y = y * (720 / 544) * 2
+    elseif os == "Vita" then
+        -- convert the vita resolution to the 1280x720 res
+        x = x * (1280 / 960)
+        y = y * (720 / 544)
     end
-    print(pos.x, pos.y)
+
+    print(x, y)
+
+    pos = {x = x, y = y}
 
     if title then
         title = false
@@ -356,6 +430,12 @@ function love.draw(screen) -- screen is for support for 3DS.
 
             love.graphics.print("Score: "..math.floor(scoreDisplay[1]),10,70,nil,0.5, 0.5, screen)
             love.graphics.printf(math.floor(timerTime/1000),0,70,love.graphics.getWidth()-10,"right", screen)
+        end
+
+        local os = love.system.getOS()
+        if os == "PSP" or os == "Vita" or os == "PS3" then
+            love.graphics.setColor(0, 1, 0, 1)
+            love.graphics.circle("fill", simulatedMouse.x, simulatedMouse.y, 5)
         end
     elseif screen == "bottom" then
     end
